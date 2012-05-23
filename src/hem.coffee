@@ -47,6 +47,8 @@ class Hem
     specs:        './test/specs'
     specsPath:    '/test/specs.js'
 
+    watchOptions: {ignoreDotFiles: true}
+
   constructor: (options = {}) ->
     @options[key] = value for key, value of options    
     @options[key] = value for key, value of @readSlug()
@@ -82,7 +84,7 @@ class Hem
     @build() 
     for dir in (path.dirname(lib) for lib in @options.libs).concat @options.css, @options.paths
       continue unless path.existsSync(dir)
-      require('watch').watchTree dir, (file, curr, prev) =>
+      require('watch').watchTree dir, @options.watchOptions, (file, curr, prev) =>
         if curr and (curr.nlink is 0 or +curr.mtime isnt +prev?.mtime)
           console.log "#{file} changed.  Rebuilding."
           @build()
